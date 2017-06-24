@@ -1,0 +1,130 @@
+#%RAML 1.0
+
+title: ACME Banking HTTP API
+version: 1.0
+
+baseUri: http://localhost:4567
+
+uses:
+  rest: ./rest.raml
+
+types:
+
+  CustomerData:
+    (resource-type): Customer
+    properties:
+      customer_id: integer
+      type: string
+      lei: string
+      tax_id: string
+      email: string
+      title?:
+        type: string
+        enum: [mr, mrs, ms, dr]
+      given_name: string
+      family_name: string
+      gender:
+        type: string
+        enum: [female, male]
+      vat_id?: string
+      birth_date: date-only
+
+  BankAccountData:
+    (resource-type): BankAccount
+    properties:
+      account_id: integer
+      customer_id: integer
+      account_number: string
+      accountType:
+        type: string
+        enum: [ checking, savings ]
+      amount: integer
+      lei: string
+      fees_and_comissions: string
+      review_state:
+        type: string
+        enum: [ requested, cancelled, opened, closed ]
+      interest_rate: integer
+      annual_interest_rate: integer
+      minimum_overflow: integer
+      overdraft_limit: integer
+
+  AddressData:
+    (resource-type): Address
+    properties:
+      country: string
+      locality: string
+      postal_code: string
+      address: string
+
+
+/customers:
+  (rest.resource-collection): Customer
+  get:
+    description: Returns all Customers
+    responses:
+      200:
+        body:
+          application/json: CustomerData[]
+
+/customers/{id}:
+  (rest.resource): Customer
+  uriParameters:
+    id:
+      (rest.resource-property): customer_id
+      type: integer
+  get:
+    description: Returns Customer data
+    responses:
+      200:
+        body:
+          application/json:
+            type: CustomerData
+
+/customers/{id}/address:
+  (rest.resource-link): has_address
+  (rest.resource): Address
+  uriParameters:
+    id:
+      (rest.resource-property): customer_id
+      type: integer
+  get:
+    description: Returns the Address of the Customer
+    responses:
+      200:
+        body:
+          application/json:
+            type: AddressData
+
+/customers/{id}/accounts:
+  (rest.resource-link): account_owner
+  (rest.resource-collection): BankAccount
+  uriParameters:
+    id:
+      (rest.resource-property): customer_id
+      type: integer
+  get:
+    description: Returns a collection Accounts for a Customer
+    responses:
+      200:
+        body:
+          application/json:
+            type: BankAccountData[]
+
+/customers/{id}/accounts/{account_id}:
+  (rest.resource-link): account_owner
+  (rest.resource): BankAccount
+  uriParameters:
+    id:
+      (rest.resource-property): customer_id
+      type: integer
+    customer_id:
+      (rest.resource-property): account_id
+      type: integer
+  get:
+    description: Returns BankAccount data
+    responses:
+      200:
+        body:
+          application/json:
+            type: BankAccountData
