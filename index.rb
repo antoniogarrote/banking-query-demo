@@ -8,12 +8,15 @@ configure do
 end
 
 get '/customers' do
-  CustomerData.all.to_json
+  CustomerData.all.to_json(except: :_id)
 end
 
 get '/customers/:customer_id' do
   begin
-    CustomerData.find(params[:customer_id].to_i).to_json
+    CustomerData
+      .where(customer_id: params[:customer_id].to_i)
+      .first
+      .to_json(except: :_id)
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end
@@ -22,7 +25,10 @@ end
 
 get '/customers/:customer_id/address' do
   begin
-    AddressData.where(:customer_id => params[:customer_id].to_i)[0].to_json
+    AddressData
+      .where(customer_id: params[:customer_id].to_i)
+      .first
+      .to_json(except: :_id)
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end
@@ -31,7 +37,9 @@ end
 
 get '/customers/:customer_id/accounts' do
   begin
-    BankAccountData.where(:customer_id => params[:customer_id].to_i).to_json
+    BankAccountData
+      .where(customer_id: params[:customer_id].to_i)
+      .to_json(except: :_id)
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end
@@ -39,7 +47,11 @@ end
 
 get '/customers/:customer_id/accounts/:account_id' do
   begin
-    BankAccountData.where(:customer_id => params[:customer_id].to_i, :id => params[:account_id].to_i)[0].to_json
+    BankAccountData
+      .where(customer_id: params[:customer_id].to_i,
+             id: params[:account_id].to_i)
+      .first
+      .to_json(except: :_id)
   rescue Mongoid::Errors::DocumentNotFound
     nil
   end

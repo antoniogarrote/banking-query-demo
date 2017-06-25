@@ -156,12 +156,15 @@ end
 include RandomGenerators
 
 def generate(num_users)
+  CustomerData.destroy_all
+  BankAccountData.destroy_all
+  AddressData.destroy_all
   (0 .. num_users).each do |i|
     c = CustomerData.next
     c.save!
     (0 .. random_int(10)).each do |j|
-      BankAccountData.next(c.id).save!
+      BankAccountData.next(c.customer_id).save!
     end
-    AddressData.next(c.id).save!
+    AddressData.next(c.customer_id).save!
   end
 end
