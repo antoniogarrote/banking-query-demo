@@ -7,11 +7,12 @@ baseUri: http://localhost:4567
 
 uses:
   rest: ./rest.raml
+  pagination: ./pagination.raml
 
 types:
 
   CustomerData:
-    (resource-type): Customer
+    (rest.resource-type): Customer
     properties:
       customer_id: integer
       type: string
@@ -30,7 +31,7 @@ types:
       birth_date: date-only
 
   BankAccountData:
-    (resource-type): BankAccount
+    (rest.resource-type): BankAccount
     properties:
       account_id: integer
       customer_id: integer
@@ -50,7 +51,7 @@ types:
       overdraft_limit: integer
 
   AddressData:
-    (resource-type): Address
+    (rest.resource-type): Address
     properties:
       country: string
       locality: string
@@ -62,6 +63,15 @@ types:
   (rest.resource-collection): Customer
   get:
     description: Returns all Customers
+    queryParameters:
+      skip:
+        (pagination.limit): true
+        required: false
+        type: integer
+      count:
+        (pagination.offset): true
+        required: false
+        type: integer
     responses:
       200:
         body:
@@ -105,6 +115,15 @@ types:
       type: integer
   get:
     description: Returns a collection Accounts for a Customer
+    queryParameters:
+      skip:
+        (pagination.limit): true
+        required: false
+        type: integer
+      count:
+        (pagination.offset): true
+        required: false
+        type: integer
     responses:
       200:
         body:
