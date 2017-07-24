@@ -80,6 +80,9 @@ types:
 
 /customers/{id}:
   (rest.resource): Customer
+  (rest.external-link):
+    spec: "http://localhost:8081/publishers/antoniogarrote/projects/credit-reports/versions/current/raml/api.raml"
+    path: /applicants/{applicant_id}/reports
   uriParameters:
     id:
       (rest.resource-property): customer_id

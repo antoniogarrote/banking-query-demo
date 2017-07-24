@@ -51,6 +51,12 @@ module RandomGenerators
   def one_of xs
     xs[((rand * 10) % xs.count).to_i]
   end
+
+  def random_email(name)
+    email = Faker::Internet.email
+    domain = email.split("@").last
+    "#{name}@#{domain}"
+  end
 end
 
 class CustomerData
@@ -62,6 +68,7 @@ class CustomerData
   field :customer_id, type: Integer
   field :type, type: String
   field :lei, type: String
+  field :email, type: String
   field :tax_id, type: String
   field :title, type: String
   field :given_name, type: String
@@ -78,12 +85,14 @@ class CustomerData
     titles = customer_gender == 'm' ? ['mr', 'dr'] : ['ms', 'mrs', 'dr']
     given, family = random_name(customer_gender).split(/\s+/)
     customer_age = age
+    email = random_email("#{given}.#{family}")
 
     CustomerData.new(type: one_of(["personal", "finance"]),
                      lei: random_id(10),
                      tax_id: random_id(10),
                      title: one_of(titles),
                      gender: customer_gender,
+                     email: email,
                      given_name: given,
                      family_name: family,
                      vat_id: random_id(10),
